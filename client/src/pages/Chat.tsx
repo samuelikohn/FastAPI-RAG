@@ -21,7 +21,9 @@ export default function ChatPage() {
 	const [messages, setMessages] = useState<Message[]>([])
 	const [input, setInput] = useState("")
 	const [isLoading, setIsLoading] = useState(false)
-	const [openSources, setOpenSources] = useState<Record<number, Set<number>>>({})
+	const [openSources, setOpenSources] = useState<Record<number, Set<number>>>(
+		{}
+	)
 	const bottomRef = useRef<HTMLDivElement>(null)
 
 	useEffect(() => {
@@ -87,7 +89,7 @@ export default function ChatPage() {
 	}
 
 	return (
-		<div className="flex flex-col h-screen bg-gray-50">
+		<div className="flex flex-col h-full bg-gray-50">
 			<header className="bg-white border-b border-gray-200 px-6 py-4 shrink-0">
 				<h1 className="text-xl font-semibold text-gray-800">Chat</h1>
 			</header>
@@ -123,44 +125,61 @@ export default function ChatPage() {
 												Sources
 											</p>
 											<div className="flex flex-col gap-1">
-												{msg.sources.map((src, srcIndex) => {
-													const isOpen =
-														openSources[msgIndex]?.has(srcIndex) ?? false
-													const filename =
-														typeof src.metadata.filename === "string"
-															? src.metadata.filename
-															: "Source"
+												{msg.sources.map(
+													(src, srcIndex) => {
+														const isOpen =
+															openSources[
+																msgIndex
+															]?.has(srcIndex) ??
+															false
+														const filename =
+															typeof src.metadata
+																.filename ===
+															"string"
+																? src.metadata
+																		.filename
+																: "Source"
 
-													return (
-														<div key={srcIndex}>
-															<button
-																onClick={() => toggleSource(msgIndex, srcIndex)}
-																className="flex items-center gap-1.5 text-blue-600 hover:text-blue-800 text-xs font-medium cursor-pointer transition-colors"
-															>
-																<svg
-																	className={`w-3 h-3 transition-transform ${isOpen ? "rotate-90" : ""}`}
-																	xmlns="http://www.w3.org/2000/svg"
-																	fill="none"
-																	viewBox="0 0 24 24"
-																	strokeWidth={2.5}
-																	stroke="currentColor"
+														return (
+															<div key={srcIndex}>
+																<button
+																	onClick={() =>
+																		toggleSource(
+																			msgIndex,
+																			srcIndex
+																		)
+																	}
+																	className="flex items-center gap-1.5 text-blue-600 hover:text-blue-800 text-xs font-medium cursor-pointer transition-colors"
 																>
-																	<path
-																		strokeLinecap="round"
-																		strokeLinejoin="round"
-																		d="m8.25 4.5 7.5 7.5-7.5 7.5"
-																	/>
-																</svg>
-																{filename}
-															</button>
-															{isOpen && (
-																<div className="mt-1.5 ml-4 p-2.5 bg-gray-50 rounded-lg border border-gray-200 text-xs text-gray-600 whitespace-pre-wrap font-mono leading-relaxed">
-																	{src.content}
-																</div>
-															)}
-														</div>
-													)
-												})}
+																	<svg
+																		className={`w-3 h-3 transition-transform ${isOpen ? "rotate-90" : ""}`}
+																		xmlns="http://www.w3.org/2000/svg"
+																		fill="none"
+																		viewBox="0 0 24 24"
+																		strokeWidth={
+																			2.5
+																		}
+																		stroke="currentColor"
+																	>
+																		<path
+																			strokeLinecap="round"
+																			strokeLinejoin="round"
+																			d="m8.25 4.5 7.5 7.5-7.5 7.5"
+																		/>
+																	</svg>
+																	{filename}
+																</button>
+																{isOpen && (
+																	<div className="mt-1.5 ml-4 p-2.5 bg-gray-50 rounded-lg border border-gray-200 text-xs text-gray-600 whitespace-pre-wrap font-mono leading-relaxed">
+																		{
+																			src.content
+																		}
+																	</div>
+																)}
+															</div>
+														)
+													}
+												)}
 											</div>
 										</div>
 									)}

@@ -1,19 +1,27 @@
 # FastAPI RAG
 
-A REST API for a Retrieval-Augmented Generation (RAG) pipeline. Upload documents, store them as vector embeddings, and query them via a Gemini-powered chatbot that answers questions from your document library.
+A full-stack Retrieval-Augmented Generation (RAG) application. Upload documents, store them as vector embeddings, and query them via a Gemini-powered chatbot that answers questions from your document library.
 
 ## Tech Stack
 
+### Server
 - **API**: FastAPI + Uvicorn
-- **LLM & Embeddings**: Google Gemini (`gemini-flash-latest` / `text-embedding-004`)
+- **LLM & Embeddings**: Google Gemini (`gemini-flash-latest` / `gemini-embedding-001`)
 - **Vector Database**: DataStax AstraDB via `langchain-astradb` and `astrapy`
 - **Document Processing**: LangChain text splitters, pypdf
+
+### Client
+- **Framework**: React 19 + TypeScript
+- **Build tool**: Vite
+- **Styling**: Tailwind CSS v4
+- **Routing**: React Router v7
 
 ## Setup
 
 ### Prerequisites
 
 - Python 3.13+
+- Node.js 20+
 - [uv](https://docs.astral.sh/uv/)
 - A DataStax AstraDB account with a collection created
 - A Google AI API key
@@ -29,7 +37,7 @@ ASTRA_DB_APPLICATION_TOKEN=  # AstraDB application token
 ASTRA_DB_COLLECTION=      # Name of the AstraDB collection to use
 ```
 
-### Install & Run
+### Run the Server
 
 ```bash
 cd server
@@ -39,12 +47,57 @@ uv run python main.py
 
 The API will be available at `http://localhost:8000`. Interactive docs at `http://localhost:8000/docs`.
 
+### Run the Client
+
+In a separate terminal:
+
+```bash
+cd client
+npm install
+npm run dev
+```
+
+The client will be available at `http://localhost:5173`. The Vite dev server proxies all `/api` requests to the FastAPI server at `http://localhost:8000`, so both must be running.
+
 ### Run Tests
 
 ```bash
 cd server
-uv run pytest tests/ -v
+uv run pytest
 ```
+
+---
+
+## Client
+
+The client is a single-page React application with three pages, accessible via the navigation bar at the top of every page.
+
+### Upload
+
+The Upload page (`/upload`) lets you add documents to the RAG pipeline.
+
+- Click the dashed upload area to open a file picker. Supported formats: `.pdf`, `.txt`, `.md`.
+- Once a file is selected, it is immediately submitted to the API — no separate submit step.
+- While the upload is in progress, a loading spinner is shown.
+- On success, the filename and chunk count are displayed with an "Upload another" button to reset the form.
+- On failure, the error message from the API is shown with a "Try again" button.
+
+### Chat
+
+The Chat page (`/chat`) is a conversational interface for querying your uploaded documents.
+
+- Type a question in the text box at the bottom of the screen and press **Enter** (or click **Send**) to submit it.
+- Use **Shift+Enter** to insert a newline without sending.
+- The answer from the LLM appears as a message in the conversation thread. Underneath each answer, the source chunks used to generate it are listed as expandable items — click a source to reveal the raw text excerpt and the filename it came from.
+- A three-dot animation appears while the API is processing.
+
+### Search
+
+The Search page (`/search`) shows a table of all documents currently stored in the vector database.
+
+- **Filter**: type in the search box to filter rows by filename (case-insensitive substring match).
+- **Sort**: click the **Filename** or **Upload Date** column header to sort by that column. Click again to reverse the direction.
+- **Delete**: click **Delete** on a row to begin deletion. A confirmation prompt appears inline — click **Confirm** to proceed or **Cancel** to dismiss.
 
 ---
 

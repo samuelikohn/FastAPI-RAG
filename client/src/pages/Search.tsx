@@ -15,7 +15,11 @@ export default function SearchPage() {
 	const [filter, setFilter] = useState("")
 	const [sortCol, setSortCol] = useState<SortColumn>("upload_date")
 	const [sortDir, setSortDir] = useState<SortDir>("desc")
-	const [status, setStatus] = useState<"loading" | "error" | "ready">("loading")
+	const [status, setStatus] = useState<"loading" | "error" | "ready">(
+		"loading"
+	)
+	const [deleting, setDeleting] = useState<Set<string>>(new Set())
+	const [confirming, setConfirming] = useState<string | null>(null)
 
 	useEffect(() => {
 		fetch("/api/v1/documents")
@@ -29,6 +33,22 @@ export default function SearchPage() {
 			})
 			.catch(() => setStatus("error"))
 	}, [])
+
+	const handleDelete = async (id: string) => {
+		setConfirming(null)
+		setDeleting((prev) => new Set(prev).add(id))
+		try {
+			const r = await fetch(`/api/v1/documents/${id}`, { method: "DELETE" })
+			if (!r.ok) throw new Error()
+			setDocs((prev) => prev.filter((d) => d.document_id !== id))
+		} finally {
+			setDeleting((prev) => {
+				const next = new Set(prev)
+				next.delete(id)
+				return next
+			})
+		}
+	}
 
 	const handleSort = (col: SortColumn) => {
 		if (col === sortCol) {
@@ -47,10 +67,12 @@ export default function SearchPage() {
 		})
 
 	return (
-		<div className="min-h-screen bg-gray-50 p-6">
+		<div className="min-h-full bg-gray-50 p-6">
 			<div className="max-w-4xl mx-auto">
 				<div className="flex items-center justify-between mb-6 gap-4">
-					<h1 className="text-2xl font-semibold text-gray-800 shrink-0">Documents</h1>
+					<h1 className="text-2xl font-semibold text-gray-800 shrink-0">
+						Documents
+					</h1>
 					<input
 						type="text"
 						value={filter}
@@ -68,7 +90,9 @@ export default function SearchPage() {
 
 				{status === "error" && (
 					<div className="flex justify-center py-16">
-						<p className="text-red-600 text-sm">Failed to load documents. Please try again.</p>
+						<p className="text-red-600 text-sm">
+							Failed to load documents. Please try again.
+						</p>
 					</div>
 				)}
 
@@ -91,13 +115,14 @@ export default function SearchPage() {
 										dir={sortDir}
 										onSort={handleSort}
 									/>
+									<th className="px-6 py-3" />
 								</tr>
 							</thead>
 							<tbody>
 								{docs.length === 0 && (
 									<tr>
 										<td
-											colSpan={2}
+											colSpan={3}
 											className="px-6 py-12 text-center text-sm text-gray-400"
 										>
 											No documents uploaded yet.
@@ -107,7 +132,7 @@ export default function SearchPage() {
 								{docs.length > 0 && visible.length === 0 && (
 									<tr>
 										<td
-											colSpan={2}
+											colSpan={3}
 											className="px-6 py-12 text-center text-sm text-gray-400"
 										>
 											No documents match your search.
@@ -119,8 +144,54 @@ export default function SearchPage() {
 										key={doc.document_id}
 										className="border-t border-gray-100 hover:bg-gray-50 transition-colors"
 									>
-										<td className="px-6 py-4 text-sm text-gray-800">{doc.filename}</td>
-										<td className="px-6 py-4 text-sm text-gray-800">{doc.upload_date}</td>
+										<td className="px-6 py-4 text-sm text-gray-800">
+											{doc.filename}
+										</td>
+										<td className="px-6 py-4 text-sm text-gray-800">
+											{doc.upload_date}
+										</td>
+										<td className="px-6 py-4 text-right">
+											{deleting.has(doc.document_id) ? (
+												<span className="text-xs text-gray-400">
+													Deleting…
+												</span>
+											) : confirming === doc.document_id ? (
+												<div className="flex items-center justify-end gap-3">
+													<span className="text-xs text-gray-500">
+														Delete this document?
+													</span>
+													<button
+														onClick={() =>
+															void handleDelete(
+																doc.document_id
+															)
+														}
+														className="text-xs text-red-500 hover:text-red-700 font-medium transition-colors cursor-pointer"
+													>
+														Confirm
+													</button>
+													<button
+														onClick={() =>
+															setConfirming(null)
+														}
+														className="text-xs text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+													>
+														Cancel
+													</button>
+												</div>
+											) : (
+												<button
+													onClick={() =>
+														setConfirming(
+															doc.document_id
+														)
+													}
+													className="text-xs text-red-500 hover:text-red-700 transition-colors cursor-pointer"
+												>
+													Delete
+												</button>
+											)}
+										</td>
 									</tr>
 								))}
 							</tbody>
@@ -157,7 +228,11 @@ function SortHeader({ label, col, active, dir, onSort }: SortHeaderProps) {
 						strokeWidth={2.5}
 						stroke="currentColor"
 					>
-						<path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+						/>
 					</svg>
 				) : (
 					<svg
