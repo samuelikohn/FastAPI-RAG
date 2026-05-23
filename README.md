@@ -8,13 +8,13 @@ A full-stack Retrieval-Augmented Generation (RAG) application. Upload documents,
 - **API**: FastAPI + Uvicorn
 - **LLM & Embeddings**: Google Gemini (`gemini-flash-latest` / `gemini-embedding-001`)
 - **Vector Database**: DataStax AstraDB via `langchain-astradb` and `astrapy`
-- **Document Processing**: LangChain text splitters, pypdf
+- **Document Processing**: LangChain recursive character text splitter, `pypdf`
 
 ### Client
-- **Framework**: React 19 + TypeScript
+- **Framework**: React + TypeScript
 - **Build tool**: Vite
-- **Styling**: Tailwind CSS v4
-- **Routing**: React Router v7
+- **Styling**: Tailwind CSS
+- **Routing**: React Router
 
 ## Setup
 
@@ -77,7 +77,7 @@ The client is a single-page React application with three pages, accessible via t
 The Upload page (`/upload`) lets you add documents to the RAG pipeline.
 
 - Click the dashed upload area to open a file picker. Supported formats: `.pdf`, `.txt`, `.md`.
-- Once a file is selected, it is immediately submitted to the API — no separate submit step.
+- Once a file is selected, it is immediately submitted to the API.
 - While the upload is in progress, a loading spinner is shown.
 - On success, the filename and chunk count are displayed with an "Upload another" button to reset the form.
 - On failure, the error message from the API is shown with a "Try again" button.
@@ -88,7 +88,7 @@ The Chat page (`/chat`) is a conversational interface for querying your uploaded
 
 - Type a question in the text box at the bottom of the screen and press **Enter** (or click **Send**) to submit it.
 - Use **Shift+Enter** to insert a newline without sending.
-- The answer from the LLM appears as a message in the conversation thread. Underneath each answer, the source chunks used to generate it are listed as expandable items — click a source to reveal the raw text excerpt and the filename it came from.
+- The answer from the LLM appears as a message in the conversation thread. Underneath each answer, the source chunks used to generate it are listed as expandable items. Click a source to reveal the raw text excerpt and the filename it came from.
 - A three-dot animation appears while the API is processing.
 
 ### Search
@@ -97,7 +97,7 @@ The Search page (`/search`) shows a table of all documents currently stored in t
 
 - **Filter**: type in the search box to filter rows by filename (case-insensitive substring match).
 - **Sort**: click the **Filename** or **Upload Date** column header to sort by that column. Click again to reverse the direction.
-- **Delete**: click **Delete** on a row to begin deletion. A confirmation prompt appears inline — click **Confirm** to proceed or **Cancel** to dismiss.
+- **Delete**: click **Delete** on a row to begin deletion. A confirmation prompt appears inline, click **Confirm** to proceed or **Cancel** to dismiss.
 
 ---
 
