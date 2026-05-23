@@ -31,10 +31,10 @@ A full-stack Retrieval-Augmented Generation (RAG) application. Upload documents,
 Copy `server/.env.sample` to `server/.env` and fill in the values:
 
 ```
-GOOGLE_API_KEY=           # Google AI Studio API key
-ASTRA_DB_API_ENDPOINT=    # AstraDB database API endpoint URL
+GOOGLE_API_KEY=              # Google AI Studio API key
+ASTRA_DB_API_ENDPOINT=       # AstraDB database API endpoint URL
 ASTRA_DB_APPLICATION_TOKEN=  # AstraDB application token
-ASTRA_DB_COLLECTION=      # Name of the AstraDB collection to use
+ASTRA_DB_COLLECTION=         # Name of the AstraDB collection to use
 ```
 
 ### Run the Server
