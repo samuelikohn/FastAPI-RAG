@@ -107,19 +107,6 @@ All endpoints are prefixed with `/api/v1`.
 
 ---
 
-### Health Check
-
-```
-GET /
-```
-
-**Response**
-```json
-{ "message": "Hello World" }
-```
-
----
-
 ### Upload Document
 
 ```
